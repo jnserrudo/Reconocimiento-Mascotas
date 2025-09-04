@@ -35,7 +35,7 @@ app = FastAPI(
 )
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Para desarrollo. En producción, especifica tus dominios.
+    allow_origins=["https://front-reconocimiento-mascotas.onrender.com", "http://localhost:3000", "http://localhost:5174", "http://localhost:5175"], # Para desarrollo. En producción, especifica tus dominios.
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
