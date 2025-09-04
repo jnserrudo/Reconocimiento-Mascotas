@@ -1,0 +1,61 @@
+# =================================================================
+# .gitignore para Proyectos Python / FastAPI
+# =================================================================
+
+# 1. Entornos Virtuales
+# Ignora la carpeta del entorno virtual. Es enorme y específica de tu máquina.
+venv/
+env/
+.venv/
+.env/
+*/venv/
+*/env/
+*/.venv/
+*/.env/
+
+# 2. Archivos de Secretos y Configuración Local
+# ¡EL MÁS IMPORTANTE! Nunca subas tus claves secretas.
+.env
+
+# 3. Archivos de Cache de Python
+# Python genera estos archivos para acelerar la ejecución, no son necesarios en el repo.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 4. Bases de Datos Locales
+# Si usas SQLite para pruebas locales, ignora el archivo de la base de datos.
+*.sqlite3
+*.db
+
+# 5. Archivos de IDEs y Editores de Código
+# Archivos de configuración específicos de tu editor que no le interesan a otros.
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# 6. Archivos del Sistema Operativo
+# Archivos basura generados por macOS, Windows, etc.
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 7. Archivos de Paquetes y Distribución
+# Si en el futuro empaquetas tu aplicación para distribuirla.
+/dist/
+/build/
+*.egg-info/
+*.egg
+
+# 8. Archivos de Test y Cobertura
+# Reportes generados al ejecutar pruebas.
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# 9. Archivos de Logs
+# Archivos de registro que tu aplicación pueda generar.
+*.log
