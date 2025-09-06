@@ -30,9 +30,16 @@ app = FastAPI(
     title="Servicio de IA para Reconocimiento de Mascotas",
     description="Provee endpoints para la integración (calcular vector, buscar coincidencias) y un endpoint de prueba para publicar reportes completos."
 )
+
+origins = [
+    "http://localhost:3000", # Para tu desarrollo local del front
+    "http://localhost:5174", # Otro puerto común de Vite
+    "https://reconocimiento-mascotas.onrender.com" # La URL de tu front cuando lo despliegues
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
