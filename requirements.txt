@@ -72,7 +72,7 @@ supabase_auth==2.12.3
 supabase_functions==0.10.1
 tensorboard==2.20.0
 tensorboard-data-server==0.7.2
-tensorflow==2.20.0
+tensorflow-cpu==2.20.0
 termcolor==3.1.0
 threadpoolctl==3.6.0
 typing-inspection==0.4.1
