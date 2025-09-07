@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from typing import List, Literal, Optional
 from dotenv import load_dotenv
 from supabase import create_client, Client
+from uuid import UUID # Importante para validar el ID del reporte
 
 import tensorflow as tf
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
@@ -61,6 +62,26 @@ class PublishResult(BaseModel):
     report_id: str
     image_url: str
 
+
+
+# NUEVO MODELO para la respuesta del detalle del reporte
+class ReportImageDetail(BaseModel):
+    id: UUID
+    image_url: str
+    is_primary: bool
+
+class ReportDetail(BaseModel):
+    id: UUID
+    title: str
+    description: str
+    species: str
+    location: str
+    report_type: str
+    status: str
+    contact_info: dict
+    report_images: List[ReportImageDetail] # Anidamos las imágenes
+
+
 # --- Lógica Central ---
 def extract_features(img_bytes: bytes) -> np.ndarray:
     img = Image.open(io.BytesIO(img_bytes)).convert('RGB').resize((224, 224))
@@ -70,6 +91,29 @@ def extract_features(img_bytes: bytes) -> np.ndarray:
     features = base_model.predict(img_array, verbose=0)
     return features.flatten()
 
+
+
+
+@app.get("/report/{report_id}", response_model=ReportDetail, tags=["Integración - Datos"])
+async def get_report_details(report_id: UUID):
+    """
+    Obtiene todos los detalles de un reporte específico, incluyendo todas sus imágenes.
+    """
+    try:
+        # Hacemos una consulta a la tabla 'reports' y le pedimos que incluya
+        # todos los datos relacionados de la tabla 'report_images'
+        response = supabase.table("reports").select(
+            "*, report_images(*)"
+        ).eq("id", str(report_id)).single().execute()
+
+        if not response.data:
+            raise HTTPException(status_code=404, detail="Reporte no encontrado")
+
+        return response.data
+    except Exception as e:
+        # Captura errores genéricos o si el UUID es inválido
+        raise HTTPException(status_code=500, detail=f"Error al obtener el reporte: {e}")
+        
 # =================================================================
 # ENDPOINTS OFICIALES PARA LA INTEGRACIÓN CON EL EQUIPO
 # =================================================================
@@ -166,3 +210,5 @@ async def publish_report_test(
 
     print("--- FIN DE EJECUCIÓN DEL ENDPOINT DE PRUEBA ---")
     return {"status": "ok", "report_id": report_id, "image_url": image_url}
+
+
