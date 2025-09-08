@@ -12,6 +12,7 @@ from typing import List, Literal, Optional
 from dotenv import load_dotenv
 from supabase import create_client, Client
 from uuid import UUID # Importante para validar el ID del reporte
+from fastapi import Query # Importa Query para parámetros de consulta
 
 import tensorflow as tf
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2, preprocess_input
