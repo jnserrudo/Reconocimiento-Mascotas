@@ -94,6 +94,39 @@ def extract_features(img_bytes: bytes) -> np.ndarray:
 
 
 
+@app.get("/reports", response_model=List[ReportDetail], tags=["Integración - Datos"])
+async def get_all_reports(
+    page: int = Query(1, ge=1), # Parámetro para la página, empieza en 1
+    limit: int = Query(10, ge=1, le=50) # Límite de resultados por página
+):
+    """
+    Obtiene una lista paginada de todos los reportes con estado 'abierto'.
+    Incluye la información de sus imágenes.
+    """
+    try:
+        # Calculamos el offset para la paginación
+        offset = (page - 1) * limit
+        
+        # Hacemos la consulta a Supabase
+        response = supabase.table("reports").select(
+            "*, report_images(*)" # Traemos los reportes y sus imágenes asociadas
+        ).eq(
+            "status", "abierto" # Solo los que no están resueltos
+        ).order(
+            "created_at", desc=True # Los más nuevos primero
+        ).range(
+            offset, offset + limit - 1
+        ).execute()
+
+        if response.data:
+            return response.data
+        return [] # Devuelve una lista vacía si no hay más resultados
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al obtener los reportes: {e}")
+
+
+
 @app.get("/report/{report_id}", response_model=ReportDetail, tags=["Integración - Datos"])
 async def get_report_details(report_id: UUID):
     """
@@ -113,7 +146,7 @@ async def get_report_details(report_id: UUID):
     except Exception as e:
         # Captura errores genéricos o si el UUID es inválido
         raise HTTPException(status_code=500, detail=f"Error al obtener el reporte: {e}")
-        
+
 # =================================================================
 # ENDPOINTS OFICIALES PARA LA INTEGRACIÓN CON EL EQUIPO
 # =================================================================
